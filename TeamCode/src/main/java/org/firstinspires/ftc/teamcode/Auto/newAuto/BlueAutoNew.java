@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Actions;
 import com.acmerobotics.roadrunner.Pose2d;
