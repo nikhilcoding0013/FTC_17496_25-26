@@ -17,6 +17,9 @@ import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 @Autonomous(name = "BlueAutoClose")
 public class BlueAutoNew extends LinearOpMode {
 
+    // VISION
+    private AprilTag vision;
+    
     // SHOOTER
     private DcMotorEx shooterLeft;
     private DcMotorEx shooterRight;
@@ -61,7 +64,8 @@ public class BlueAutoNew extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(-49.84, 55.93, Math.toRadians(144.046));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-
+        vision = new AprilTag(hardwareMap, telemetry);
+        
         // SHOOTER
         shooterLeft  = hardwareMap.get(DcMotorEx.class, "LS");
         shooterRight = hardwareMap.get(DcMotorEx.class, "RS");
@@ -103,5 +107,11 @@ public class BlueAutoNew extends LinearOpMode {
                 .splineTo(new Vector2d(-18, 35), Math.toRadians(64))
                 .build()
         );
+
+        // Step 4 - read motif tag
+        vision.update();
+        int motifId = vision.getMotifId();
+        telemetry.addData("Motif ID", motifId);
+        telemetry.update();
     }
 }
