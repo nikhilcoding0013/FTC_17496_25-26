@@ -198,7 +198,7 @@ public class BlueAutoNew extends LinearOpMode {
             aboveRow = 21;
         collectRow(aboveRow, drive);
 
-        // Step 8 - shoot routine
+        // Step 8 - shoot routine but get rid of ball 1
         shootRoutine(1365, 0.36, true);
 
         // Step 9 - get off line
