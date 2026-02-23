@@ -318,6 +318,19 @@ public class AprilTag {
         return null; // not found
     }
 
+    public int getMotifId() {
+        if (currentDetections == null || currentDetections.isEmpty()) return -1;
+    
+        for (AprilTagDetection detection : currentDetections) {
+            switch (detection.id) {
+                case 21: return 21; // GPP
+                case 22: return 22; // PGP
+                case 23: return 23; // PPG
+            }
+        }
+        return -1; // no motif tag found
+    }
+    
     /** Returns angle in DEGREES: atan2(rawX / rawZ). */
     public double getAngleDegrees(AprilTagDetection detection) {
         if (detection == null || detection.rawPose == null) return 0;
