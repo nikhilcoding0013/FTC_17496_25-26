@@ -104,8 +104,8 @@ public class BlueAutoNew extends LinearOpMode {
         intake.setVelocity(INTAKE_VEL);
         Actions.runBlocking(
                 drive.actionBuilder(current)
-                        .lineToX(current.position.x - 34,
-                                new TranslationalVelConstraint(5.0),
+                        .lineToX(current.position.x - 25,
+                                new TranslationalVelConstraint(8.0),
                                 new ProfileAccelConstraint(-20, 20))
                         .build()
         );

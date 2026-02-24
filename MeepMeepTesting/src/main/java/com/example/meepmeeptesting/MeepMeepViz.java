@@ -1,6 +1,8 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
@@ -39,7 +41,7 @@ public class MeepMeepViz {
 
                 // Step 5 - collectRow(22)
                 .splineToLinearHeading(new Pose2d(-24, -12.11, Math.PI), Math.PI)
-                .lineToX(-58)
+                .lineToX(-50, new TranslationalVelConstraint(8.0), new ProfileAccelConstraint(-20, 20))
                 // safe intermediate to avoid row 23
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(-18, -5, Math.toRadians(135)), Math.toRadians(135 + 180))
@@ -48,7 +50,7 @@ public class MeepMeepViz {
 
                 // Step 7 - collectRow(23)
                 .splineToLinearHeading(new Pose2d(-24, 11.56, Math.PI), Math.PI)
-                .lineToX(-58)
+                .lineToX(-50, new TranslationalVelConstraint(8.0), new ProfileAccelConstraint(-20, 20))
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(-18, 18, Math.toRadians(135)), Math.toRadians(135 + 180))
                 .setReversed(false)
