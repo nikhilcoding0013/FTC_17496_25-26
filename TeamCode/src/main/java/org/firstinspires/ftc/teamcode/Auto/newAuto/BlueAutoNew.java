@@ -79,21 +79,21 @@ public class BlueAutoNew extends LinearOpMode {
             case 21:
                 Actions.runBlocking(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .splineToLinearHeading(new Pose2d(-24, -35.67, Math.PI), Math.PI)
+                                .splineTo(new Vector2d(-24, -35.67), Math.PI)
                                 .build()
                 );
                 break;
             case 22:
                 Actions.runBlocking(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .splineToLinearHeading(new Pose2d(-24, -12.11, Math.PI), Math.PI)
+                                .splineTo(new Vector2d(-24, -12.11), Math.PI)
                                 .build()
                 );
                 break;
             case 23:
                 Actions.runBlocking(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .splineToLinearHeading(new Pose2d(-24, 11.56, Math.PI), Math.PI)
+                                .splineTo(new Vector2d(-24, 11.56), Math.PI)
                                 .build()
                 );
                 break;
@@ -111,24 +111,22 @@ public class BlueAutoNew extends LinearOpMode {
         );
         intake.setVelocity(0);
 
-        // Reverse back out staying below row 23, then go to shooting position
+        // Reverse back out then go to shooting position
         current = drive.localizer.getPose();
         if (row == 22) {
-            // safe intermediate point to avoid row 23 balls
             Actions.runBlocking(
                     drive.actionBuilder(current)
                             .setReversed(true)
-                            .splineToLinearHeading(new Pose2d(-18, -5, Math.toRadians(135)), Math.toRadians(135 + 180))
+                            .splineTo(new Vector2d(-18, -5), Math.toRadians(135 + 180))
                             .setReversed(false)
-                            .splineToLinearHeading(new Pose2d(-18, 18, Math.toRadians(135)), Math.toRadians(135))
+                            .splineTo(new Vector2d(-18, 18), Math.toRadians(135))
                             .build()
             );
         } else {
-            // rows 21 and 23 can go directly
             Actions.runBlocking(
                     drive.actionBuilder(current)
                             .setReversed(true)
-                            .splineToLinearHeading(new Pose2d(-18, 18, Math.toRadians(135)), Math.toRadians(135 + 180))
+                            .splineTo(new Vector2d(-18, 18), Math.toRadians(135 + 180))
                             .setReversed(false)
                             .build()
             );
@@ -185,7 +183,7 @@ public class BlueAutoNew extends LinearOpMode {
         // Step 3 - drive to (-18, 35) at 64 degrees
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .splineToLinearHeading(new Pose2d(-18, 35, Math.toRadians(64)), Math.toRadians(64))
+                        .splineTo(new Vector2d(-18, 35), Math.toRadians(64))
                         .build()
         );
 
@@ -218,7 +216,7 @@ public class BlueAutoNew extends LinearOpMode {
         Pose2d current = drive.localizer.getPose();
         Actions.runBlocking(
                 drive.actionBuilder(current)
-                        .strafeTo(new Vector2d(-40, -15))
+                        .splineTo(new Vector2d(-40, -15), Math.toRadians(270))
                         .build()
         );
     }
