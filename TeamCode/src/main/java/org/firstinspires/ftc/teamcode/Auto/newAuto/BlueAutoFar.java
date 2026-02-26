@@ -110,6 +110,7 @@ public class BlueAutoFar extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .splineTo(new Vector2d(-24, -35), angle1)
+                        .lineToY(-35)
                         .build()
         );
 
