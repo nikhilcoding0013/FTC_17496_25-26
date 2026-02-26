@@ -17,8 +17,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
 @Config
-@TeleOp(name = "BlueTeleop")
-public class BlueTeleop extends LinearOpMode {
+@TeleOp(name = "RedTeleop")
+public class RedTeleop extends LinearOpMode {
 
     // DRIVE - field level so aimAtTarget can access it
     private MecanumDrive drive;
@@ -28,9 +28,9 @@ public class BlueTeleop extends LinearOpMode {
     private DcMotorEx shooterRight;
 
     // TARGET POINT
-    private static final double TARGET_X = -66.0;
+    private static final double TARGET_X = 66.0;
     private static final double TARGET_Y =  66.0;
-    private static final double CORNER_X = -72.0;
+    private static final double CORNER_X = 72.0;
     private static final double CORNER_Y =  72.0;
     boolean autoAimActive = false;
     boolean lastY = false;
@@ -59,9 +59,9 @@ public class BlueTeleop extends LinearOpMode {
         // Turn to face target using RoadRunner
         double angleToTarget = Math.atan2(TARGET_Y - pose.position.y, TARGET_X - pose.position.x);
         Actions.runBlocking(
-            drive.actionBuilder(pose)
-                .turnTo(angleToTarget)
-                .build()
+                drive.actionBuilder(pose)
+                        .turnTo(angleToTarget)
+                        .build()
         );
 
         // Brief outtake before spooling up
