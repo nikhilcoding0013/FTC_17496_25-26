@@ -15,8 +15,8 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
-@Autonomous(name = "BlueAuto NEW")
-public class BlueAutoNew extends LinearOpMode {
+@Autonomous(name = "BlueAuto Far")
+public class BlueAutoFar extends LinearOpMode {
 
     private DcMotorEx shooterLeft;
     private DcMotorEx shooterRight;
@@ -51,12 +51,7 @@ public class BlueAutoNew extends LinearOpMode {
     }
 
     private void collectRow(int row, MecanumDrive drive) {
-        double rowY;
-        switch (row) {
-            case 21: rowY = -29.67; break;
-            case 22: rowY = -6.11; break;
-            default: rowY =  17.56; break;
-        }
+        double rowY = -35;
 
         // Turn to face +Y
         Actions.runBlocking(
@@ -70,7 +65,7 @@ public class BlueAutoNew extends LinearOpMode {
                         .build()
         );
 
-        // Reverse in Y to the row, maintaining 90 degree heading
+        // Go to row, maintaining 90 degree heading
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .lineToYLinearHeading(rowY, Math.toRadians(90))
@@ -112,41 +107,29 @@ public class BlueAutoNew extends LinearOpMode {
                         .build()
         );
 
-        // Turn to face +Y
+        // Turn to face goal
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
+                        .turnTo(Math.toRadians(115))
                         .build()
         );
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
-                        .build()
-        );
-
-        // Spline forward to shooting position, heading aligned to path
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-24, 24), Math.toRadians(90))
+                        .turnTo(Math.toRadians(115))
                         .build()
         );
 
-        // Turn to shooting angle
+
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(135))
-                        .build()
-        );
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(135))
+                        .lineToY(-52)
                         .build()
         );
     }
 
     @Override
     public void runOpMode() {
-        Pose2d startPose = new Pose2d(-48, 54, Math.toRadians(144.046));
+        Pose2d startPose = new Pose2d(-12, -60, Math.toRadians(114));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         AprilTag vision = new AprilTag(hardwareMap, telemetry);
 
@@ -172,61 +155,19 @@ public class BlueAutoNew extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        // Step 1 - reverse 7 inches along starting heading
-        Actions.runBlocking(
-                drive.actionBuilder(startPose)
-                        .lineToXLinearHeading(
-                                startPose.position.x + 7 * Math.cos(Math.toRadians(144.046 + 180)),
-                                Math.toRadians(144.046)
-                        )
-                        .build()
-        );
+        // Step 1 - shoot
+        shootRoutine(1750, 0.65, false);
 
-        // Step 2 - shoot
-        shootRoutine(1170, 0.0, false);
-
-        // Step 3 - reverse to x=-24 maintaining heading
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .lineToXLinearHeading(-24, Math.toRadians(144.046))
-                        .build()
-        );
-/*
-        // Step 4 - turn inplace to face motif at 60 degrees
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(60))
-                        .build()
-        );
-
-        // Step 5 - read motif tag
-        int motifId = -1;
-        for (int i = 0; i < 5 && motifId == -1; i++) {
-            vision.update();
-            motifId = vision.getMotifId();
-            sleep(30);
-        }
-        if (motifId == -1) motifId = 22;
-*/
         // Step 6 - collect motif row
         collectRow(23, drive);
 
         // Step 7 - shoot
-        shootRoutine(1350, 0.38, false);
-
-        // Step 8 - collect above row
-        int aboveRow = 22;
-        if (aboveRow > 23) aboveRow = 21;
-
-        collectRow(22, drive);
-
-        // Step 9 - shoot with muck
-        shootRoutine(1350, 0.38, false);
+        shootRoutine(1750, 0.65, false);
 
         // Step 10 - get off of line
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-40, -15), Math.toRadians(270))
+                        .splineTo(new Vector2d(-20, -40), Math.toRadians(90))
                         .build()
         );
     }
