@@ -126,12 +126,12 @@ public class BlueAutoFar extends LinearOpMode {
                         .build()
         );
 
-        // Step 6 - drive in -X to x=-52 with intake
-        intake.setVelocity(INTAKE_VEL);
+        // Step 6 - drive in -X to x=-53 with intake
+        intake.setVelocity(1250);
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-52,
-                                new TranslationalVelConstraint(10.0),
+                        .lineToX(-53,
+                                new TranslationalVelConstraint(9.5),
                                 new ProfileAccelConstraint(-20, 20))
                         .build()
         );
@@ -141,14 +141,14 @@ public class BlueAutoFar extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .setReversed(true)
-                        .splineTo(new Vector2d(-16, -55), Math.toRadians(295))
+                        .splineTo(new Vector2d(-30, -57), Math.toRadians(295))
                         .build()
         );
 
         // Step 8 - small move so turnTo has valid prior path
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToY(-55)
+                        .lineToY(-57)
                         .build()
         );
 

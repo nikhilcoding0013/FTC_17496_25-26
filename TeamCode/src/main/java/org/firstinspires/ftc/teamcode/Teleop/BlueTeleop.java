@@ -63,6 +63,11 @@ public class BlueTeleop extends LinearOpMode {
                 .turnTo(angleToTarget)
                 .build()
         );
+        Actions.runBlocking(
+                drive.actionBuilder(pose)
+                        .turnTo(angleToTarget)
+                        .build()
+        );
 
         // Brief outtake before spooling up
         intake.setVelocity(-INTAKE_VEL);

@@ -31,7 +31,7 @@ public class BlueAutoClose extends LinearOpMode {
     private void shootRoutine(double rpm, double hoodPos, boolean muck) {
         if (!muck) {
             intake.setVelocity(-INTAKE_VEL);
-            sleep(80);
+            sleep(110);
             intake.setVelocity(0);
         } else {
             shooterLeft.setVelocity(700);
@@ -98,7 +98,7 @@ public class BlueAutoClose extends LinearOpMode {
         intake.setVelocity(1250);
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-52,
+                        .lineToX(-48,
                                 new TranslationalVelConstraint(9.5),
                                 new ProfileAccelConstraint(-20, 20))
                         .build()
@@ -131,7 +131,7 @@ public class BlueAutoClose extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d startPose = new Pose2d(-48, 54, Math.toRadians(144.046));
+        Pose2d startPose = new Pose2d(-44.6, 49, Math.toRadians(140.5));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         AprilTag vision = new AprilTag(hardwareMap, telemetry);
 
@@ -168,19 +168,19 @@ public class BlueAutoClose extends LinearOpMode {
         );
 
         // Step 2 - shoot
-        shootRoutine(1200, 0, false);
+        shootRoutine(1175, 0, false);
 
         // Step 3 - collect row 23
         collectRow(23, drive);
 
         // Step 4 - shoot
-        shootRoutine(1350, 0.78, false);
+        shootRoutine(1350, 0.38, false);
 
         // Step 5 - collect row 22
         collectRow(22, drive);
 
         // Step 6 - shoot
-        shootRoutine(1350, 0.78, false);
+        shootRoutine(1350, 0.38, false);
 
         // Step 7 - get off of line
         Actions.runBlocking(
