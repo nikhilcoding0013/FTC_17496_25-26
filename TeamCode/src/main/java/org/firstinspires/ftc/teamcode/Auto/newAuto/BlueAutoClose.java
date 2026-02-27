@@ -28,16 +28,16 @@ public class BlueAutoClose extends LinearOpMode {
     private static final double SHOOTING_X = -16;
     private static final double SHOOTING_Y = 8;
 
-    private void shootRoutine(double rpm, double hoodPos, boolean muck) {
+    private void shootRoutine(double rpm, double hoodPos, boolean muck, double intake_vel) {
         if (!muck) {
-            intake.setVelocity(-INTAKE_VEL);
-            sleep(110);
+            intake.setVelocity(-intake_vel);
+            sleep(200);
             intake.setVelocity(0);
         } else {
             shooterLeft.setVelocity(700);
             shooterRight.setVelocity(700);
             sleep(400);
-            intake.setVelocity(INTAKE_VEL);
+            intake.setVelocity(intake_vel);
             sleep(300);
             intake.setVelocity(0);
         }
@@ -46,7 +46,7 @@ public class BlueAutoClose extends LinearOpMode {
         shooterLeft.setVelocity(rpm);
         shooterRight.setVelocity(rpm);
         sleep(2000);
-        intake.setVelocity(INTAKE_VEL);
+        intake.setVelocity(intake_vel);
         sleep(3000);
         intake.setVelocity(0);
         shooterLeft.setVelocity(0);
@@ -95,10 +95,10 @@ public class BlueAutoClose extends LinearOpMode {
         );
 
         // Drive forward into row slowly with intake
-        intake.setVelocity(1250);
+        intake.setVelocity(1500);
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-48,
+                        .lineToX(-42,
                                 new TranslationalVelConstraint(9.5),
                                 new ProfileAccelConstraint(-20, 20))
                         .build()
@@ -167,19 +167,19 @@ public class BlueAutoClose extends LinearOpMode {
         );
 
         // Step 2 - shoot
-        shootRoutine(1175, 0, false);
+        shootRoutine(1185, 0, false, 800);
 
         // Step 3 - collect row 23
         collectRow(23, drive);
 
         // Step 4 - shoot
-        shootRoutine(1350, 0.38, false);
+        shootRoutine(1425, 0.39, false, INTAKE_VEL);
 
         // Step 5 - collect row 22
         collectRow(22, drive);
 
         // Step 6 - shoot
-        shootRoutine(1350, 0.38, false);
+        shootRoutine(1425, 0.39, false, INTAKE_VEL);
 
         // Step 7 - get off of line
         Actions.runBlocking(

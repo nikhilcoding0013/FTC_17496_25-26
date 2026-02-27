@@ -28,7 +28,7 @@ public class BlueAutoFar extends LinearOpMode {
     private void shootRoutine(double rpm, double hoodPos, boolean muck) {
         if (!muck) {
             intake.setVelocity(-INTAKE_VEL);
-            sleep(80);
+            sleep(200);
             intake.setVelocity(0);
         } else {
             shooterLeft.setVelocity(700);
@@ -126,7 +126,7 @@ public class BlueAutoFar extends LinearOpMode {
         );
 
         // Step 6 - drive in -X to x=-53 with intake
-        intake.setVelocity(1250);
+        intake.setVelocity(1500);
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
                         .lineToX(-53,
