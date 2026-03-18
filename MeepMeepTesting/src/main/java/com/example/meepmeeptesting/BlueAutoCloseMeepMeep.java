@@ -64,7 +64,7 @@ public class BlueAutoCloseMeepMeep {
                         // turn to face (-72, 72)
                         .turnTo(goalAngle)
 
-                        // collect row 22 - backwards spline to lineup
+                        /* collect row 22 - backwards spline to lineup
                         .setReversed(true)
                         .splineTo(new Vector2d(-24, row22Y), Math.toRadians(200))
                         .setReversed(false)
@@ -88,7 +88,7 @@ public class BlueAutoCloseMeepMeep {
 
                         // turn to face (-72, 72)
                         .turnTo(goalAngle)
-
+                        */
                         // get off line
                         .splineTo(new Vector2d(-40, 10), Math.toRadians(200))
 
