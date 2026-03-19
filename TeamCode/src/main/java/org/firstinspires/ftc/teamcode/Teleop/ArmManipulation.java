@@ -21,8 +21,8 @@ public class ArmManipulation extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         // SERVOS
-        servo0 = hardwareMap.get(Servo.class, "servo0");
-        servo1 = hardwareMap.get(Servo.class, "servo1");
+        servo0 = hardwareMap.get(Servo.class, "hoodR");
+        servo1 = hardwareMap.get(Servo.class, "hoodL");
         servo1.setDirection(Servo.Direction.REVERSE);
         servo0.setPosition(0.5);
         servo1.setPosition(0.5);
@@ -33,26 +33,29 @@ public class ArmManipulation extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested()) {
 
-            // LEFT STICK - both servos spin same direction
-            double leftStickY = -gamepad1.left_stick_y;
-            double leftServoPos = (leftStickY + 1.0) / 2.0;
+            double minPos = 0.25;
+            double maxPos = 0.75;
 
-            servo0.setPosition(leftServoPos);
-            servo1.setPosition(leftServoPos);
+            // DPAD UP/DOWN → both servos same direction
+            if (gamepad1.dpad_up) {
+                servo0.setPosition(maxPos);
+                servo1.setPosition(maxPos);
+            } else if (gamepad1.dpad_down) {
+                servo0.setPosition(minPos);
+                servo1.setPosition(minPos);
+            }
 
-            // RIGHT STICK - servos spin opposite directions
-            double rightStickX = gamepad1.right_stick_x;
-            double servo0Pos = (rightStickX + 1.0) / 2.0;
-            double servo1Pos = (-rightStickX + 1.0) / 2.0;
+            // DPAD LEFT/RIGHT → opposite directions
+            if (gamepad1.dpad_right) {
+                servo0.setPosition(maxPos);
+                servo1.setPosition(minPos);
+            } else if (gamepad1.dpad_left) {
+                servo0.setPosition(minPos);
+                servo1.setPosition(maxPos);
+            }
 
-            servo0.setPosition(servo0Pos);
-            servo1.setPosition(servo1Pos);
-
-            // TELEMETRY
-            telemetry.addData("Left Stick Y",     "%.3f", leftStickY);
-            telemetry.addData("Right Stick X",    "%.3f", rightStickX);
-            telemetry.addData("Servo 0 Position", "%.3f", servo0.getPosition());
-            telemetry.addData("Servo 1 Position", "%.3f", servo1.getPosition());
+            telemetry.addData("Servo 0", servo0.getPosition());
+            telemetry.addData("Servo 1", servo1.getPosition());
             telemetry.update();
         }
     }
