@@ -12,11 +12,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import org.firstinspires.ftc.teamcode.PoseStorage;
 
 import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
 
-@Autonomous(name = "BlueAuto NEW")
-public class BlueAutoNew extends LinearOpMode {
+@Autonomous(name = "RedAuto Close")
+public class RedAutoClose extends LinearOpMode {
 
     private DcMotorEx shooterLeft;
     private DcMotorEx shooterRight;
@@ -25,16 +26,19 @@ public class BlueAutoNew extends LinearOpMode {
     private Servo hoodL;
     private Servo hoodR;
 
-    private void shootRoutine(double rpm, double hoodPos, boolean muck) {
+    private static final double SHOOTING_X = 16;
+    private static final double SHOOTING_Y = 8;
+
+    private void shootRoutine(double rpm, double hoodPos, boolean muck, double intake_vel) {
         if (!muck) {
-            intake.setVelocity(-INTAKE_VEL);
+            intake.setVelocity(-intake_vel);
             sleep(200);
             intake.setVelocity(0);
         } else {
             shooterLeft.setVelocity(700);
             shooterRight.setVelocity(700);
             sleep(400);
-            intake.setVelocity(INTAKE_VEL);
+            intake.setVelocity(intake_vel);
             sleep(300);
             intake.setVelocity(0);
         }
@@ -43,87 +47,93 @@ public class BlueAutoNew extends LinearOpMode {
         shooterLeft.setVelocity(rpm);
         shooterRight.setVelocity(rpm);
         sleep(2000);
-        intake.setVelocity(INTAKE_VEL);
+        intake.setVelocity(intake_vel);
         sleep(3000);
         intake.setVelocity(0);
         shooterLeft.setVelocity(0);
         shooterRight.setVelocity(0);
     }
 
+    private double angleToGoal(Pose2d current) {
+        return Math.atan2(72 - current.position.y, 72 - current.position.x);
+    }
+
     private void collectRow(int row, MecanumDrive drive) {
         double rowY;
+        double splineInTangent;
+        double splineOutTangent;
         switch (row) {
-            case 21: rowY = -35.67; break;
-            case 22: rowY = -12.11; break;
-            default: rowY =  11.56; break;
+            case 21: rowY = -35.67; splineInTangent = 300; splineOutTangent = 230; break;
+            case 22: rowY = -12.11; splineInTangent = 200; splineOutTangent = 190; break;
+            default: rowY =  11.56; splineInTangent = 300; splineOutTangent = 230; break;
         }
 
-        // Turn to face +Y
+        // Backwards spline to lineup position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
+                        .setReversed(true)
+                        .splineTo(new Vector2d(16, rowY), Math.toRadians(splineInTangent))
                         .build()
         );
 
-        // Reverse in Y to the row, maintaining 90 degree heading
+        // Adjust Y
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToYLinearHeading(rowY, Math.toRadians(90))
+                        .lineToY(rowY)
                         .build()
         );
 
-        // Turn to face 180 degrees to align with balls
+        // Turn to face 0, readjust
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(180))
+                        .turnTo(Math.toRadians(0))
+                        .build()
+        );
+        Actions.runBlocking(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .turnTo(Math.toRadians(0))
                         .build()
         );
 
-        // Drive forward into row slowly with intake running
-        intake.setVelocity(INTAKE_VEL);
+        // Drive forward into row slowly with intake
+        intake.setVelocity(1500);
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-48,
-                                new TranslationalVelConstraint(10.0),
+                        .lineToX(42,
+                                new TranslationalVelConstraint(9.5),
                                 new ProfileAccelConstraint(-20, 20))
                         .build()
         );
         intake.setVelocity(0);
 
-        // Back straight out to x=-24
+        // Backwards spline back to shooting position
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToX(-24)
+                        .setReversed(true)
+                        .splineTo(new Vector2d(SHOOTING_X, SHOOTING_Y), Math.toRadians(splineOutTangent))
                         .build()
         );
 
-        // Turn to face +Y
+        // Nudge for valid prior path
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(90))
+                        .lineToY(SHOOTING_Y - 0.01)
                         .build()
         );
 
-        // Spline forward to shooting position, heading aligned to path
+        // Turn to face (72, 72), readjust
+        double angle = angleToGoal(drive.localizer.getPose());
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-24, 24), Math.toRadians(90))
-                        .build()
-        );
-
-        // Turn to shooting angle
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(135))
+                        .turnTo(angle)
                         .build()
         );
     }
 
     @Override
     public void runOpMode() {
-        Pose2d startPose = new Pose2d(-48, 54, Math.toRadians(144.046));
+        Pose2d startPose = new Pose2d(44.6, 49, Math.toRadians(39.5));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-        AprilTag vision = new AprilTag(hardwareMap, telemetry);
 
         shooterLeft  = hardwareMap.get(DcMotorEx.class, "LS");
         shooterRight = hardwareMap.get(DcMotorEx.class, "RS");
@@ -143,7 +153,7 @@ public class BlueAutoNew extends LinearOpMode {
         hoodL.setPosition(0.0);
         hoodR.setPosition(0.0);
 
-        telemetry.addLine("Blue Auto Ready");
+        telemetry.addLine("Blue Auto Close Ready");
         telemetry.update();
         waitForStart();
 
@@ -151,57 +161,33 @@ public class BlueAutoNew extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
                         .lineToXLinearHeading(
-                                startPose.position.x + 7 * Math.cos(Math.toRadians(144.046 + 180)),
-                                Math.toRadians(144.046)
+                                startPose.position.x + 7 * Math.cos(Math.toRadians(39.5 + 180)),
+                                Math.toRadians(39.5)
                         )
                         .build()
         );
 
         // Step 2 - shoot
-        shootRoutine(1170, 0.0, false);
+        shootRoutine(1185, 0, false, 800);
 
-        // Step 3 - reverse to x=-24 maintaining heading
+        // Step 3 - collect row 23
+        collectRow(23, drive);
+
+        // Step 4 - shoot
+        shootRoutine(1425, 0.39, false, INTAKE_VEL);
+
+        // Step 5 - collect row 22
+        //collectRow(22, drive);
+
+        // Step 6 - shoot
+        //shootRoutine(1425, 0.39, false, INTAKE_VEL);
+
+        // Step 7 - get off of line
         Actions.runBlocking(
                 drive.actionBuilder(drive.localizer.getPose())
-                        .lineToXLinearHeading(-24, Math.toRadians(144.046))
+                        .splineTo(new Vector2d(40, 10), Math.toRadians(-20))
                         .build()
         );
-
-        // Step 4 - turn inplace to face motif at 60 degrees
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .turnTo(Math.toRadians(60))
-                        .build()
-        );
-
-        // Step 5 - read motif tag
-        int motifId = -1;
-        for (int i = 0; i < 5 && motifId == -1; i++) {
-            vision.update();
-            motifId = vision.getMotifId();
-            sleep(30);
-        }
-        if (motifId == -1) motifId = 22;
-
-        // Step 6 - collect motif row
-        collectRow(motifId, drive);
-
-        // Step 7 - shoot
-        shootRoutine(1350, 0.38, false);
-
-        // Step 8 - collect above row
-        int aboveRow = motifId + 1;
-        if (aboveRow > 23) aboveRow = 21;
-        collectRow(aboveRow, drive);
-
-        // Step 9 - shoot with muck
-        shootRoutine(1350, 0.38, true);
-
-        // Step 10 - get off of line
-        Actions.runBlocking(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .splineTo(new Vector2d(-40, -15), Math.toRadians(270))
-                        .build()
-        );
+        PoseStorage.currentPose = drive.localizer.getPose();
     }
 }
