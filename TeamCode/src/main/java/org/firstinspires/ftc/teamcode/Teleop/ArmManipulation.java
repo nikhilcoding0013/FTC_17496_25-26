@@ -57,8 +57,8 @@ public class ArmManipulation extends LinearOpMode {
             final double DIFF_MIN = -0.5;
             final double DIFF_MAX =  0.5;
             final double STEP = 0.015;
-            final double SPIN_POWER = 0.4;
-            final double LIFT_POWER = 0.2;
+            final double SPIN_POWER = 0.3;
+            final double LIFT_POWER = 0.1;
 
             // Servo Module Control
             // LEFT STICK Y → both servos same direction
