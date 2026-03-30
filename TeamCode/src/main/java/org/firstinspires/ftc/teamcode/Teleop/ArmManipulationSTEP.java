@@ -49,32 +49,34 @@ public class ArmManipulationSTEP extends LinearOpMode {
 
         double s0 = 0.5;
         double s1 = 0.5;
+        final double SPIN_POWER = 0.2;
+        final double LIFT_POWER = 0.1;
+        final double HOLD_POWER = 0.25;
+
+        boolean holding = false;
+        int holdPos0 = 0;
+        int holdPos1 = 0;
 
         while (opModeIsActive() && !isStopRequested()) {
 
-            final double SERVO_MIN  = 0.0;
-            final double SERVO_MAX  = 1.0;
-            final double TOTAL_MIN  = 0.5;
-            final double TOTAL_MAX  = 1.5;
-            final double STEP       = 0.015;
-            final double SPIN_POWER = 0.3;
-            final double LIFT_POWER = 0.1;
+            final double SERVO_MIN = 0.0;
+            final double SERVO_MAX = 1.0;
+            final double TOTAL_MIN = 0.5;
+            final double TOTAL_MAX = 1.5;
+            final double STEP      = 0.015;
 
             // Compute candidate positions
             double newS0 = s0 + (-gamepad1.left_stick_y + gamepad1.left_stick_x) * STEP;
             double newS1 = s1 + (-gamepad1.left_stick_y - gamepad1.left_stick_x) * STEP;
-
             // Clamp each servo to [0.0, 1.0]
             newS0 = Math.min(Math.max(newS0, SERVO_MIN), SERVO_MAX);
             newS1 = Math.min(Math.max(newS1, SERVO_MIN), SERVO_MAX);
-
             // Check totalPos — if valid, accept; otherwise reject entire update
             double newTotal = newS0 + newS1;
             if (newTotal >= TOTAL_MIN && newTotal <= TOTAL_MAX) {
                 s0 = newS0;
                 s1 = newS1;
             }
-
             // Apply
             servo0.setPosition(s0);
             servo1.setPosition(s1);
@@ -82,15 +84,38 @@ public class ArmManipulationSTEP extends LinearOpMode {
             // Motor Base Control
             double liftInput = -gamepad1.right_stick_y;
             double spinInput =  gamepad1.right_stick_x;
-            motor0.setPower((liftInput * LIFT_POWER) + (spinInput * SPIN_POWER));
-            motor1.setPower((liftInput * LIFT_POWER) - (spinInput * SPIN_POWER));
+
+            if (liftInput != 0 || spinInput != 0) {
+                // Moving
+                holding = false;
+                motor0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motor0.setPower((liftInput * LIFT_POWER) + (spinInput * SPIN_POWER));
+                motor1.setPower((liftInput * LIFT_POWER) - (spinInput * SPIN_POWER));
+            } else {
+                // Holding — capture position only once when stick is first released
+                if (!holding) {
+                    holdPos0 = motor0.getCurrentPosition();
+                    holdPos1 = motor1.getCurrentPosition();
+                    motor0.setTargetPosition(holdPos0);
+                    motor1.setTargetPosition(holdPos1);
+                    motor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motor0.setPower(HOLD_POWER);
+                    motor1.setPower(HOLD_POWER);
+                    holding = true;
+                }
+            }
 
             // TELEMETRY
-            telemetry.addData("Servo 0",    "%.3f", s0);
-            telemetry.addData("Servo 1",    "%.3f", s1);
-            telemetry.addData("Total Pos",  "%.3f", s0 + s1);
-            telemetry.addData("Lift Input", "%.3f", liftInput);
-            telemetry.addData("Spin Input", "%.3f", spinInput);
+            telemetry.addData("Servo 0",     "%.3f", s0);
+            telemetry.addData("Servo 1",     "%.3f", s1);
+            telemetry.addData("Total Pos",   "%.3f", s0 + s1);
+            telemetry.addData("Lift Input",  "%.3f", liftInput);
+            telemetry.addData("Spin Input",  "%.3f", spinInput);
+            telemetry.addData("Holding",     holding);
+            telemetry.addData("Motor 0 Pos", motor0.getCurrentPosition());
+            telemetry.addData("Motor 1 Pos", motor1.getCurrentPosition());
             telemetry.update();
         }
     }
