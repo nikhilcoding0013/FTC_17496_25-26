@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.AprilTagItems.AprilTag;
+import org.firstinspires.ftc.teamcode.Vision.AprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 @Config
 @Autonomous(name = "TurnCalibration")

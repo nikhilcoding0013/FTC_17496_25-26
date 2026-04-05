@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.teamcode.Auto.oldAutos;
+package org.firstinspires.ftc.teamcode.Auto.oldAutos.Close_PreReq;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.AprilTagItems.AprilTag;
+import org.firstinspires.ftc.teamcode.Vision.AprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@Autonomous(name = "CloseAutoRed", group = "Old Autos")
+@Autonomous(name = "CloseAutoRed")
 public class CloseAutoRed extends LinearOpMode {
 
     // Drivetrain
@@ -16,8 +17,8 @@ public class CloseAutoRed extends LinearOpMode {
     // Vision
     private AprilTag vision;
 
-    public static long TURN_TIME = 1800;
-    private static final double LAUNCHER_RPM = 1350;
+    public static long TURN_TIME = 1900;
+    private static final double LAUNCHER_RPM = 1370;
     public static final double DEG_PER_SEC = 58;
     private static final double TURN_RPM = 860;
     private static double TURN_POWER = 0.17;
@@ -28,7 +29,7 @@ public class CloseAutoRed extends LinearOpMode {
     private static final double INTAKE_RPM1 = 1350;
     private static final double INTAKE_RPM2 = 800;
 
-    private static final double TARGET_DIST_IN = 2450;
+    private static final double TARGET_DIST_IN = 2280;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -113,20 +114,17 @@ public class CloseAutoRed extends LinearOpMode {
                 telemetry.addData("SmoothedDist(in)", "%.2f", smoothedDist);
 
                 if (smoothedDist > TARGET_DIST_IN) {
-                    // INSTANT BRAKE
                     drive(0,0,0,0);
-                    //sleep(120);
+                    sleep(120);
 
                     telemetry.addLine("Reached target distance.");
                     telemetry.update();
                     break;
                 } else {
-                    // CONSTANT SPEED BACKUP (your requirement)
-                    drive(-700, -700, -700, -700);
+                    drive(-1100, -1100, -1100, -1100);
                 }
             } else {
-                // STILL BACK UP AT SAME SPEED
-                drive(-700, -700, -700, -700);
+                drive(-1100, -1100, -1100, -1100);
             }
 
             vision.addTelemetry();
@@ -140,11 +138,11 @@ public class CloseAutoRed extends LinearOpMode {
                 break;
             }
 
-            //sleep(30);
+            sleep(30);
         }
 
         drive(0,0,0,0);
-        //sleep(100);
+        sleep(100);
 
         // =====================
         // SHOOTER ROUTINE
@@ -173,17 +171,17 @@ public class CloseAutoRed extends LinearOpMode {
             } catch (Exception e) {}
 
             telemetry.update();
-            //sleep(150);
+            sleep(150);
         }
 
         if (!shooterReady) {
             telemetry.addLine("Shooter timed spin-up fallback");
             telemetry.update();
-            //sleep(1500);
+            sleep(1500);
         } else {
             telemetry.addLine("Shooter ready");
             telemetry.update();
-            //sleep(200);
+            sleep(200);
         }
 
         telemetry.addLine("Feeding...");
@@ -194,7 +192,7 @@ public class CloseAutoRed extends LinearOpMode {
         IntakeEx.setVelocity(0);
         sleep(200);
         IntakeEx.setVelocity(INTAKE_RPM2);
-        sleep(1500);
+        sleep(1800);
         IntakeEx.setVelocity(0);
 
         LSX.setVelocity(0);
@@ -228,14 +226,14 @@ public class CloseAutoRed extends LinearOpMode {
                 break;
             }
 
-            //sleep(30);
+            sleep(10);
         }
 
         // ==============================
         // PHASE 2: COMPUTE TURN
         // ==============================
         double turnDegrees = TARGET_ANGLE_DEG - savedThetaAbsDeg;
-        turnDegrees = Math.max(0.0, turnDegrees); // force positive
+        turnDegrees = Math.max(0.0, turnDegrees);
 
         double turnTimeSec = turnDegrees / DEG_PER_SEC;
         long turnTimeMs = (long)(turnTimeSec * 1000);
@@ -244,68 +242,64 @@ public class CloseAutoRed extends LinearOpMode {
         telemetry.addData("Turn time (ms)", turnTimeMs);
         telemetry.update();
 
-        //sleep(300);
+        sleep(50);
 
         // ==============================
         // PHASE 3: BLIND LEFT TURN
         // ==============================
-        // Left turn: left motors backward, right motors forward
         drive(-TURN_RPM, -TURN_RPM, +TURN_RPM, +TURN_RPM);
         sleep(turnTimeMs);
         drive(0, 0, 0, 0);
 
         telemetry.addLine("Turn complete");
         telemetry.update();
-        //sleep(250);
+        sleep(100);
 
         // ---------------------------
         // STEP 0 — DRIVE FORWARD
         // ---------------------------
-        drive(-700, -700, -700, -700);
-        sleep(100);
+        drive(700, 700, 700, 700);
+        sleep(180);
         stopDrive();
-        //sleep(50);
+        sleep(50);
         // ---------------------------
         // STEP 0.1 — TURN TO BALLS
         // ---------------------------
         drive(600, 600, -600, -600);
-        sleep(1600);
+        sleep(TURN_TIME);
         stopDrive();
 
         // ---------------------------
         // STEP 0.2 — START INTAKE
         // ---------------------------
         IntakeEx.setPower(1.0);
-        //sleep(50);
+        sleep(30);
 
         // ---------------------------
         // STEP 0.3 — DRIVE INTO BALLS
         // ---------------------------
-        drive(400, 400, 400, 400);
-        sleep(4750);
+        drive(350, 350, 350, 350);
+        sleep(4100);
         stopDrive();
 
         // ---------------------------
         // STEP 0.4 — INTAKE OFF
         // ---------------------------
-        //IntakeEx.setPower(0);
-        //sleep(25);
+        IntakeEx.setPower(0);
+        sleep(10);
 
         // ---------------------------
         // STEP 0.5 — DRIVE BACKWARD
         // ---------------------------
         drive(-900, -900, -900, -900);
-        sleep(100);
-        IntakeEx.setVelocity(0);
-        sleep(2500);
+        sleep(1800);
         stopDrive();
-        //sleep(100);
+        sleep(10);
 
         // ---------------------------
         // STEP 0.6 — TURN CCW UNTIL rawX
         // ---------------------------
-
-        drive(-250, -250, 250, 250);
+        drive(-160, -160, 160, 160);
 
         long turnStartTime = System.currentTimeMillis();
 
@@ -319,31 +313,22 @@ public class CloseAutoRed extends LinearOpMode {
                 telemetry.addData("rawX", rawX);
                 telemetry.update();
 
-                // EXIT CONDITION — stop AND leave loop
                 if (rawX >= -2.47) {
                     break;
                 }
             }
 
-            //sleep(15);
+            sleep(15);
         }
 
-        // Stop motors ONCE
         stopDrive();
-
-        // Record duration AFTER loop exits
         long turnDuration = System.currentTimeMillis() - turnStartTime;
-
 
         // ---------------------------
         // STEP 0.7 — SLIGHT OUTTAKE
         // ---------------------------
-        IntakeEx.setVelocity(-1800);
-        LSX.setVelocity(-1350);
-        RSX.setVelocity(-1350);
-        sleep(500);
-        LSX.setVelocity(0);
-        RSX.setVelocity(0);
+        IntakeEx.setPower(-0.2);
+        sleep(300);
         IntakeEx.setPower(0);
 
         // ---------------------------
@@ -351,12 +336,13 @@ public class CloseAutoRed extends LinearOpMode {
         // ---------------------------
         LSX.setVelocity(LAUNCHER_RPM);
         RSX.setVelocity(LAUNCHER_RPM);
+        sleep(2300);
 
         // ---------------------------
         // STEP 0.9 — FEED BALLS
         // ---------------------------
         IntakeEx.setPower(1.0);
-        sleep(3000);
+        sleep(1800);
         IntakeEx.setPower(0);
 
         LSX.setVelocity(0);
@@ -365,7 +351,7 @@ public class CloseAutoRed extends LinearOpMode {
         // ---------------------------
         // STEP 0.91 — TURN BACK CW + DRIVE FORWARD
         // ---------------------------
-        drive(+TURN_RPM, +TURN_RPM, -TURN_RPM, -TURN_RPM);
+        drive(800, 800, -800, -800);
         sleep(1500);
         drive(1000,1000,1000,1000);
         sleep(1500);
@@ -381,6 +367,9 @@ public class CloseAutoRed extends LinearOpMode {
         RB.setVelocity(rb);
     }
     private void stopDrive() {
-        drive(0,0,0,0);
+        LF.setVelocity(0);
+        LB.setVelocity(0);
+        RF.setVelocity(0);
+        RB.setVelocity(0);
     }
 }

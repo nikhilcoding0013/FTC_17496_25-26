@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto.oldAutos;
+package org.firstinspires.ftc.teamcode.Auto.oldAutos.Close_PreReq;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.Vision.AprilTag;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@Autonomous(name = "CloseAutoBlue", group = "Old Autos")
-public class CloseAutoBlue extends LinearOpMode {
+@Autonomous(name = "NewAutoRed")
+public class NewAutoFramework extends LinearOpMode {
 
     // Drivetrain
     private DcMotorEx LF, LB, RF, RB;
@@ -16,7 +16,7 @@ public class CloseAutoBlue extends LinearOpMode {
     // Vision
     private AprilTag vision;
 
-    public static long TURN_TIME = 1960;
+    public static long TURN_TIME = 1900;
     private static final double LAUNCHER_RPM = 1370;
     public static final double DEG_PER_SEC = 58;
     private static final double TURN_RPM = 860;
@@ -210,7 +210,7 @@ public class CloseAutoBlue extends LinearOpMode {
 
         while (opModeIsActive()) {
             vision.update();
-            AprilTagDetection tag = vision.getTagById(20);
+            AprilTagDetection tag = vision.getTagById(24);
 
             if (tag != null && vision.isStable()) {
                 double theta = vision.getAngleDegrees(tag);
@@ -249,8 +249,8 @@ public class CloseAutoBlue extends LinearOpMode {
         // ==============================
         // PHASE 3: BLIND LEFT TURN
         // ==============================
-        // Right
-        drive(TURN_RPM, TURN_RPM, -TURN_RPM, -TURN_RPM);
+        // Left turn: left motors backward, right motors forward
+        drive(-TURN_RPM, -TURN_RPM, +TURN_RPM, +TURN_RPM);
         sleep(turnTimeMs);
         drive(0, 0, 0, 0);
 
@@ -262,13 +262,13 @@ public class CloseAutoBlue extends LinearOpMode {
         // STEP 0 — DRIVE FORWARD
         // ---------------------------
         drive(700, 700, 700, 700);
-        sleep(100);
+        sleep(180);
         stopDrive();
         sleep(50);
         // ---------------------------
         // STEP 0.1 — TURN TO BALLS
         // ---------------------------
-        drive(-600, -600, 600, 600);
+        drive(600, 600, -600, -600);
         sleep(TURN_TIME);
         stopDrive();
 
@@ -281,8 +281,8 @@ public class CloseAutoBlue extends LinearOpMode {
         // ---------------------------
         // STEP 0.3 — DRIVE INTO BALLS
         // ---------------------------
-        drive(450, 450, 450, 450);
-        sleep(3600);
+        drive(350, 350, 350, 350);
+        sleep(4100);
         stopDrive();
 
         // ---------------------------
@@ -295,21 +295,21 @@ public class CloseAutoBlue extends LinearOpMode {
         // STEP 0.5 — DRIVE BACKWARD
         // ---------------------------
         drive(-900, -900, -900, -900);
-        sleep(1650);
+        sleep(1800);
         stopDrive();
         sleep(10);
 
         // ---------------------------
-        // STEP 0.6 — TURN CW UNTIL rawX
+        // STEP 0.6 — TURN CCW UNTIL rawX
         // ---------------------------
 
-        drive(160, 160, -160, -160);
+        drive(-160, -160, 160, 160);
 
         long turnStartTime = System.currentTimeMillis();
 
         while (opModeIsActive()) {
             vision.update();
-            AprilTagDetection tag = vision.getTagById(20);
+            AprilTagDetection tag = vision.getTagById(24);
 
             if (tag != null && tag.rawPose != null) {
                 double rawX = tag.rawPose.x;
@@ -318,7 +318,7 @@ public class CloseAutoBlue extends LinearOpMode {
                 telemetry.update();
 
                 // EXIT CONDITION — stop AND leave loop
-                if (rawX <= 5.5) {
+                if (rawX >= -2.47) {
                     break;
                 }
             }
@@ -351,27 +351,27 @@ public class CloseAutoBlue extends LinearOpMode {
         // STEP 0.9 — FEED BALLS
         // ---------------------------
         IntakeEx.setPower(1.0);
-        sleep(2300);
+        sleep(1800);
         IntakeEx.setPower(0);
 
         LSX.setVelocity(0);
         RSX.setVelocity(0);
 /**
- // ---------------------------
- // STEP 0.91 — TURN BACK CW (SAME AMOUNT) + a bit more to make the 90
- // ---------------------------
- drive(TURN_POWER, TURN_POWER, -TURN_POWER, -TURN_POWER);
- sleep(turnDuration);
- TURN_POWER = 0.3;
- drive(TURN_RPM, TURN_RPM, -TURN_RPM, -TURN_RPM);
- sleep(70);
- stopDrive();
+        // ---------------------------
+        // STEP 0.91 — TURN BACK CW (SAME AMOUNT) + a bit more to make the 90
+        // ---------------------------
+        drive(TURN_POWER, TURN_POWER, -TURN_POWER, -TURN_POWER);
+        sleep(turnDuration);
+        TURN_POWER = 0.3;
+        drive(TURN_RPM, TURN_RPM, -TURN_RPM, -TURN_RPM);
+        sleep(70);
+        stopDrive();
  */
 
         // ---------------------------
-        // STEP 0.91 — TURN BACK CCW + DRIVE FORWARD
+        // STEP 0.91 — TURN BACK CW + DRIVE FORWARD
         // ---------------------------
-        drive(-800, -800, 800, 800);
+        drive(800, 800, -800, -800);
         sleep(1500);
         drive(1000,1000,1000,1000);
         sleep(1500);

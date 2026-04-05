@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Auto.newAuto;
 
-import org.firstinspires.ftc.teamcode.AprilTagItems.AprilTag;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -14,7 +13,7 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import org.firstinspires.ftc.teamcode.PoseStorage;
 
-import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Localization.MecanumDrive;
 
 @Autonomous(name = "RedAuto Far")
 public class RedAutoFar extends LinearOpMode {
