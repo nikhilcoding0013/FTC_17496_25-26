@@ -21,8 +21,8 @@ public class ArmManipulationJOYSTICK extends LinearOpMode {
     private DcMotorEx motor0;
     private DcMotorEx motor1;
 
-    public static double SPIN_POWER = 0.23;
-    public static double LIFT_POWER = 0.18;
+    public static double SPIN_VEL = 250;
+    public static double LIFT_VEL = 250;
 
     @Override
     public void runOpMode() {
@@ -41,12 +41,12 @@ public class ArmManipulationJOYSTICK extends LinearOpMode {
         motor0 = hardwareMap.get(DcMotorEx.class, "motor0");
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor0.setDirection(DcMotorSimple.Direction.FORWARD);
-        motor0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motor1 = hardwareMap.get(DcMotorEx.class, "motor1");
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addLine("ArmManipulation JOYSTICK Ready");
         telemetry.update();
@@ -67,8 +67,8 @@ public class ArmManipulationJOYSTICK extends LinearOpMode {
             // Motor Base Control
             double liftInput = -gamepad1.right_stick_y;
             double spinInput =  gamepad1.right_stick_x;
-            motor0.setPower((liftInput * LIFT_POWER) + (spinInput * SPIN_POWER));
-            motor1.setPower((liftInput * LIFT_POWER) - (spinInput * SPIN_POWER));
+            motor0.setVelocity((liftInput * LIFT_VEL) + (spinInput * SPIN_VEL));
+            motor1.setVelocity((liftInput * LIFT_VEL) - (spinInput * SPIN_VEL));
 
             // TELEMETRY
             telemetry.addData("Tilt",        "%.3f", tilt);
@@ -78,6 +78,8 @@ public class ArmManipulationJOYSTICK extends LinearOpMode {
             telemetry.addData("Servo 1",     "%.3f", s1);
             telemetry.addData("Lift Input",  "%.3f", liftInput);
             telemetry.addData("Spin Input",  "%.3f", spinInput);
+            telemetry.addData("Motor 0 Vel", motor0.getVelocity());
+            telemetry.addData("Motor 1 Vel", motor1.getVelocity());
             telemetry.addData("Motor 0 Pos", motor0.getCurrentPosition());
             telemetry.addData("Motor 1 Pos", motor1.getCurrentPosition());
             telemetry.update();
