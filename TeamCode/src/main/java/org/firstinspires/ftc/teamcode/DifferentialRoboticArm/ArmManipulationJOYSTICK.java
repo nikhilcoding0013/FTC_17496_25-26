@@ -41,11 +41,15 @@ public class ArmManipulationJOYSTICK extends LinearOpMode {
         motor0 = hardwareMap.get(DcMotorEx.class, "motor0");
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor0.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motor1 = hardwareMap.get(DcMotorEx.class, "motor1");
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addLine("ArmManipulation JOYSTICK Ready");
