@@ -25,8 +25,8 @@ right_origin = None
 left_prev    = "FIST"
 right_prev   = "FIST"
 
-DEAD_ZONE = 0.08
-MAX_RANGE = 0.25
+DEAD_ZONE = 0.03
+MAX_RANGE = 0.18
 
 def is_fist(landmarks):
     tips  = [8, 12, 16, 20]
