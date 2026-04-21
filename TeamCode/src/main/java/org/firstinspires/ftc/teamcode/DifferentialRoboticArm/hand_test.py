@@ -70,7 +70,7 @@ while cap.isOpened():
 
     if latest_result and latest_result.hand_landmarks:
         for i, hand_landmarks in enumerate(latest_result.hand_landmarks):
-            label = latest_result.handedness[i][0].display_name
+            label = "Right" if latest_result.handedness[i][0].display_name == "Left" else "Left"
 
             lm = hand_landmarks
             x, y  = palm_center(lm)
