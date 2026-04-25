@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.DifferentialRoboticArm;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,6 +15,7 @@ import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+@Config
 @TeleOp(name = "ArmManipulation GESTURE")
 public class ArmManipulationGESTURE extends LinearOpMode {
 
@@ -41,7 +43,7 @@ public class ArmManipulationGESTURE extends LinearOpMode {
         Thread udpThread = new Thread(() -> {
             try {
                 udpSocket = new DatagramSocket(9000);
-                byte[] buf = new byte[16]; // 4 floats x 4 bytes
+                byte[] buf = new byte[16];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 while (udpRunning) {
                     udpSocket.receive(packet);
@@ -92,8 +94,12 @@ public class ArmManipulationGESTURE extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Start UDP receiver before waitForStart so it's ready immediately
+        // Start UDP receiver before waitForStart
         startUdpReceiver();
+
+        // Last known servo positions — start at midpoint
+        double lastS0 = 0.5;
+        double lastS1 = 0.5;
 
         telemetry.addLine("ArmManipulation GESTURE Ready");
         telemetry.addLine("Waiting for gesture input on port 9000...");
@@ -103,28 +109,39 @@ public class ArmManipulationGESTURE extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested()) {
 
-            // Servo Module Control — left hand replaces left stick
-            double tilt    = 0.5 + (-gestureLeftY * 0.25);
-            double maxSpin = Math.min(1.0 - tilt, tilt);
-            double spin    = gestureLeftX * maxSpin;
-            double s0      = tilt + spin;
-            double s1      = tilt - spin;
-            servo0.setPosition(s0);
-            servo1.setPosition(s1);
+            // --- SERVO MODULE — left hand ---
+            // Only update servo position when left hand is actively sending input
+            if (Math.abs(gestureLeftX) > 0.01 || Math.abs(gestureLeftY) > 0.01) {
+                double tilt    = 0.5 + (-gestureLeftY * 0.25);
+                double maxSpin = Math.min(1.0 - tilt, tilt);
+                double spin    = gestureLeftX * maxSpin;
+                lastS0 = tilt + spin;
+                lastS1 = tilt - spin;
+            }
+            // Always write last known — holds position on fist
+            servo0.setPosition(lastS0);
+            servo1.setPosition(lastS1);
 
-            // Motor Base Control — right hand replaces right stick
-            double liftInput = -gestureRightY;
-            double spinInput =  gestureRightX;
-            motor0.setVelocity((liftInput * LIFT_VEL) + (spinInput * SPIN_VEL));
-            motor1.setVelocity((liftInput * LIFT_VEL) - (spinInput * SPIN_VEL));
+            // --- MOTOR MODULE — right hand ---
+            // Only move when right hand is actively sending input
+            if (Math.abs(gestureRightX) > 0.01 || Math.abs(gestureRightY) > 0.01) {
+                double liftInput = -gestureRightY;
+                double spinInput =  gestureRightX;
+                motor0.setVelocity((liftInput * LIFT_VEL) + (spinInput * SPIN_VEL));
+                motor1.setVelocity((liftInput * LIFT_VEL) - (spinInput * SPIN_VEL));
+            } else {
+                // Fist or no input — stop and brake
+                motor0.setVelocity(0);
+                motor1.setVelocity(0);
+            }
 
             // TELEMETRY
             telemetry.addData("Gesture LX",  "%.3f", gestureLeftX);
             telemetry.addData("Gesture LY",  "%.3f", gestureLeftY);
             telemetry.addData("Gesture RX",  "%.3f", gestureRightX);
             telemetry.addData("Gesture RY",  "%.3f", gestureRightY);
-            telemetry.addData("Servo 0",     "%.3f", s0);
-            telemetry.addData("Servo 1",     "%.3f", s1);
+            telemetry.addData("Servo 0",     "%.3f", lastS0);
+            telemetry.addData("Servo 1",     "%.3f", lastS1);
             telemetry.addData("Motor 0 Pos", motor0.getCurrentPosition());
             telemetry.addData("Motor 1 Pos", motor1.getCurrentPosition());
             telemetry.update();
