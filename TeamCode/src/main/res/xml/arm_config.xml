@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <ExpansionHubPortal name="Control Hub Portal" serialNumber="Control Hub">
+        <ExpansionHub name="Control Hub" portalPosition="0">
+            <DcMotor port="0" name="motor0" type="RevRobotics40HDHexMotor" />
+            <DcMotor port="1" name="motor1" type="RevRobotics40HDHexMotor" />
+
+            <Servo port="0" name="servo0" />
+            <Servo port="1" name="servo1" />
+        </ExpansionHub>
+    </ExpansionHubPortal>
+</Robot>
