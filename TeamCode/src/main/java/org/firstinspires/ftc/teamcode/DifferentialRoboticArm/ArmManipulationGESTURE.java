@@ -74,9 +74,9 @@ public class ArmManipulationGESTURE extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         // SERVOS
-        servo0 = hardwareMap.get(Servo.class, "servo0");
+        servo0 = hardwareMap.get(Servo.class, "hoodR");
         servo0.setDirection(Servo.Direction.FORWARD);
-        servo1 = hardwareMap.get(Servo.class, "servo1");
+        servo1 = hardwareMap.get(Servo.class, "hoodL");
         servo1.setDirection(Servo.Direction.REVERSE);
         servo0.setPosition(0.5);
         servo1.setPosition(0.5);
